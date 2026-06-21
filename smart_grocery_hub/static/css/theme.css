@@ -1,0 +1,246 @@
+/* =========================================================
+   Smart Grocery Hub — theme tokens
+   Palette: deep forest green + citrus accent + warm cream
+   Display face: Poppins (headings) / Body face: Inter
+   Signature: diagonal "freshness strip" (produce-crate label motif)
+   ========================================================= */
+
+:root {
+    --sgh-green-900: #0F2A1E;
+    --sgh-green-700: #1B4332;
+    --sgh-green-500: #2D6A4F;
+    --sgh-accent: #F4A300;
+    --sgh-accent-dark: #D88C00;
+    --sgh-cream: #FBF8F2;
+    --sgh-cream-dark: #F1EADD;
+    --sgh-ink: #1F2A24;
+    --sgh-muted: #6B7B72;
+}
+
+body {
+    font-family: "Inter", system-ui, sans-serif;
+    background-color: var(--sgh-cream);
+    color: var(--sgh-ink);
+}
+
+h1, h2, h3, h4, h5, h6, .sgh-brand {
+    font-family: "Poppins", system-ui, sans-serif;
+    font-weight: 700;
+    color: var(--sgh-green-900);
+}
+
+a {
+    color: var(--sgh-green-700);
+    text-decoration: none;
+}
+a:hover {
+    color: var(--sgh-accent-dark);
+}
+
+/* ---------- Header ---------- */
+.sgh-header {
+    background-color: var(--sgh-cream);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+.sgh-brand {
+    font-size: 1.4rem;
+    color: var(--sgh-green-700) !important;
+}
+.navbar-nav .nav-link {
+    color: var(--sgh-ink);
+    font-weight: 500;
+}
+.navbar-nav .nav-link:hover {
+    color: var(--sgh-green-700);
+}
+.sgh-search {
+    border: 2px solid var(--sgh-cream-dark);
+    border-radius: 8px 0 0 8px;
+}
+.sgh-search:focus {
+    box-shadow: none;
+    border-color: var(--sgh-green-500);
+}
+
+/* Signature element: the freshness strip — a repeating diagonal stripe,
+   evoking a produce-crate stencil label, used as a divider under the
+   header and as an accent border on category cards. */
+.sgh-freshness-strip {
+    height: 6px;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--sgh-green-700) 0px, var(--sgh-green-700) 10px,
+        var(--sgh-accent) 10px, var(--sgh-accent) 20px
+    );
+}
+
+/* ---------- Buttons ---------- */
+.sgh-btn-accent, .btn-sgh-accent {
+    background-color: var(--sgh-accent);
+    border-color: var(--sgh-accent);
+    color: var(--sgh-green-900);
+    font-weight: 600;
+}
+.sgh-btn-accent:hover, .btn-sgh-accent:hover {
+    background-color: var(--sgh-accent-dark);
+    border-color: var(--sgh-accent-dark);
+    color: #fff;
+}
+.btn-sgh-primary {
+    background-color: var(--sgh-green-700);
+    border-color: var(--sgh-green-700);
+    color: #fff;
+    font-weight: 600;
+}
+.btn-sgh-primary:hover {
+    background-color: var(--sgh-green-900);
+    border-color: var(--sgh-green-900);
+    color: #fff;
+}
+.btn-outline-sgh {
+    border: 2px solid var(--sgh-green-700);
+    color: var(--sgh-green-700);
+    font-weight: 600;
+}
+.btn-outline-sgh:hover {
+    background-color: var(--sgh-green-700);
+    color: #fff;
+}
+
+.sgh-badge {
+    background-color: var(--sgh-accent);
+    color: var(--sgh-green-900);
+    position: absolute;
+    top: -4px;
+    right: -10px;
+    font-size: 0.65rem;
+}
+
+/* ---------- Hero ---------- */
+.sgh-hero {
+    background: linear-gradient(120deg, var(--sgh-green-900) 0%, var(--sgh-green-700) 55%, var(--sgh-green-500) 100%);
+    color: #fff;
+    border-radius: 0 0 32px 32px;
+    position: relative;
+    overflow: hidden;
+}
+.sgh-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(244,163,0,0.08) 0px, rgba(244,163,0,0.08) 24px,
+        transparent 24px, transparent 48px
+    );
+    pointer-events: none;
+}
+.sgh-hero h1 {
+    color: #fff;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+}
+.sgh-hero-eyebrow {
+    color: var(--sgh-accent);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+/* ---------- Cards ---------- */
+.sgh-category-card {
+    border: none;
+    border-radius: 16px;
+    background: #fff;
+    border-top: 4px solid var(--sgh-accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+}
+.sgh-category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(15,42,30,0.12);
+}
+.sgh-category-icon {
+    font-size: 1.8rem;
+    color: var(--sgh-green-700);
+}
+
+.sgh-product-card {
+    border: 1px solid var(--sgh-cream-dark);
+    border-radius: 14px;
+    background: #fff;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+    overflow: hidden;
+}
+.sgh-product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(15,42,30,0.10);
+}
+.sgh-product-img-wrap {
+    background: var(--sgh-cream-dark);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sgh-muted);
+    font-size: 2.5rem;
+}
+.sgh-price {
+    color: var(--sgh-green-900);
+    font-weight: 700;
+}
+.sgh-price-strike {
+    color: var(--sgh-muted);
+    text-decoration: line-through;
+    font-size: 0.85rem;
+}
+.sgh-discount-pill {
+    background-color: var(--sgh-green-700);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+
+/* ---------- Footer ---------- */
+.sgh-footer {
+    background-color: var(--sgh-green-900);
+}
+.sgh-footer-links li {
+    margin-bottom: 0.4rem;
+}
+.sgh-footer-links a {
+    color: #C9D6CD;
+}
+.sgh-footer-links a:hover {
+    color: var(--sgh-accent);
+}
+
+/* ---------- Misc ---------- */
+.sgh-section-title {
+    border-left: 5px solid var(--sgh-accent);
+    padding-left: 12px;
+}
+.sgh-stat-card {
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--sgh-cream-dark);
+    padding: 1.25rem;
+}
+.sgh-stat-number {
+    font-family: "Poppins", sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--sgh-green-700);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sgh-category-card, .sgh-product-card {
+        transition: none;
+    }
+}

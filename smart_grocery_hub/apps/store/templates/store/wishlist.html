@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h4 sgh-section-title mb-4">My Wishlist</h1>
+
+    {% if items %}
+    <div class="row g-3">
+        {% for item in items %}
+        <div class="col-6 col-md-3">
+            {% with product=item.product %}
+                {% include "store/_product_card.html" %}
+            {% endwith %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-regular fa-heart fa-2x mb-3"></i>
+        <p>Your wishlist is empty.</p>
+        <a href="{% url 'store:shop' %}" class="btn btn-sgh-primary">Browse Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

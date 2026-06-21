@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}My Addresses — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 sgh-section-title mb-0">My Addresses</h1>
+        <a href="{% url 'accounts:address_create' %}" class="btn btn-sgh-primary btn-sm">+ Add New Address</a>
+    </div>
+
+    {% if addresses %}
+    <div class="row g-3">
+        {% for address in addresses %}
+        <div class="col-md-6">
+            <div class="bg-white border rounded-3 p-3 h-100">
+                <div class="d-flex justify-content-between">
+                    <span class="badge bg-light text-dark border mb-2">{{ address.get_label_display }}</span>
+                    {% if address.is_default %}<span class="badge bg-success">Default</span>{% endif %}
+                </div>
+                <strong>{{ address.full_name }}</strong>
+                <p class="text-muted small mb-2">
+                    {{ address.address_line1 }}, {{ address.address_line2 }}<br>
+                    {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br>
+                    Phone: {{ address.phone_number }}
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'accounts:address_update' address.id %}" class="btn btn-outline-sgh btn-sm">Edit</a>
+                    <a href="{% url 'accounts:address_delete' address.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-location-dot fa-2x mb-3"></i>
+        <p>No saved addresses yet.</p>
+        <a href="{% url 'accounts:address_create' %}" class="btn btn-sgh-primary">Add Your First Address</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

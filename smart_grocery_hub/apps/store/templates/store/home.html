@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Smart Grocery Hub — Fresh Groceries Delivered{% endblock %}
+
+{% block content %}
+<section class="sgh-hero py-5 mb-5">
+    <div class="container py-4 position-relative" style="z-index: 1;">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="sgh-hero-eyebrow mb-2">Fresh &middot; Fast &middot; Reliable</div>
+                <h1 class="mb-3">Groceries delivered to your doorstep, the smart way.</h1>
+                <p class="lead text-light-emphasis mb-4">Fruits, vegetables, dairy, staples, snacks and household essentials — all in one place, hand-picked for quality.</p>
+                <a href="{% url 'store:shop' %}" class="btn sgh-btn-accent btn-lg px-4">
+                    <i class="fa-solid fa-basket-shopping"></i> Start Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="sgh-section-title h4 mb-0">Shop by Category</h2>
+        <a href="{% url 'store:shop' %}" class="small">View all &rarr;</a>
+    </div>
+    <div class="row g-3 mb-5">
+        {% for category in categories %}
+        <div class="col-6 col-md-3">
+            <a href="{{ category.get_absolute_url }}" class="text-decoration-none">
+                <div class="sgh-category-card text-center p-3">
+                    <div class="sgh-category-icon mb-2">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div class="fw-semibold" style="color: var(--sgh-ink);">{{ category.name }}</div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-muted">No categories yet. Run <code>python manage.py seed_demo_data</code> to populate demo data.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if featured_products %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="sgh-section-title h4 mb-0">Featured Products</h2>
+        <a href="{% url 'store:shop' %}" class="small">View all &rarr;</a>
+    </div>
+    <div class="row g-3 mb-5">
+        {% for product in featured_products %}
+        <div class="col-6 col-md-3">
+            {% include "store/_product_card.html" %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if new_arrivals %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="sgh-section-title h4 mb-0">New Arrivals</h2>
+        <a href="{% url 'store:shop' %}?sort=newest" class="small">View all &rarr;</a>
+    </div>
+    <div class="row g-3 mb-5">
+        {% for product in new_arrivals %}
+        <div class="col-6 col-md-3">
+            {% include "store/_product_card.html" %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

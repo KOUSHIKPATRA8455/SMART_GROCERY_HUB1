@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Shop — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="bg-white rounded-3 p-3 border">
+                <h6 class="sgh-section-title mb-3">Categories</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="{% url 'store:shop' %}" class="{% if not selected_category %}fw-bold{% endif %}">All Products</a>
+                    </li>
+                    {% for category in categories %}
+                    <li class="mb-2">
+                        <a href="{{ category.get_absolute_url }}" class="{% if selected_category.id == category.id %}fw-bold{% endif %}">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <h1 class="h4 mb-0">
+                    {% if selected_category %}{{ selected_category.name }}{% elif query %}Results for "{{ query }}"{% else %}All Products{% endif %}
+                </h1>
+                <form method="get" class="d-flex align-items-center gap-2">
+                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                    <label class="small text-muted mb-0">Sort:</label>
+                    <select name="sort" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">Relevance</option>
+                        <option value="price_low" {% if sort == "price_low" %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if sort == "price_high" %}selected{% endif %}>Price: High to Low</option>
+                        <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
+                        <option value="name" {% if sort == "name" %}selected{% endif %}>Name</option>
+                    </select>
+                </form>
+            </div>
+
+            {% if page_obj %}
+            <div class="row g-3">
+                {% for product in page_obj %}
+                <div class="col-6 col-md-4">
+                    {% include "store/_product_card.html" %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Previous</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-box-open fa-2x mb-3"></i>
+                <p>No products found{% if query %} for "{{ query }}"{% endif %}.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

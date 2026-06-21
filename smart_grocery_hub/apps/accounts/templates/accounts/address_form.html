@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h1 class="h4 sgh-section-title mb-4">{{ title }}</h1>
+
+            <div class="bg-white border rounded-3 p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Address Type</label>
+                            {{ form.label }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            {{ form.full_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Pincode</label>
+                            {{ form.pincode }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Address Line 1</label>
+                            {{ form.address_line1 }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Address Line 2 (Landmark)</label>
+                            {{ form.address_line2 }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">City</label>
+                            {{ form.city }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">State</label>
+                            {{ form.state }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Country</label>
+                            {{ form.country }}
+                        </div>
+                        <div class="col-12 form-check ms-2 mt-3">
+                            {{ form.is_default }}
+                            <label class="form-check-label" for="{{ form.is_default.id_for_label }}">Set as default address</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-sgh-primary w-100 mt-4">Save Address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}My Cart — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h4 sgh-section-title mb-4">My Cart</h1>
+
+    {% if items %}
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {% for item in items %}
+            <div class="d-flex align-items-center gap-3 bg-white border rounded-3 p-3 mb-3">
+                <div class="sgh-product-img-wrap rounded-2" style="width: 80px; height: 80px; font-size: 1.5rem; flex-shrink: 0;">
+                    {% if item.product.images.first %}
+                        <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="w-100 h-100 rounded-2" style="object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-carrot"></i>
+                    {% endif %}
+                </div>
+                <div class="flex-grow-1">
+                    <a href="{{ item.product.get_absolute_url }}" class="fw-semibold text-decoration-none" style="color: var(--sgh-ink);">{{ item.product.name }}</a>
+                    <div class="text-muted small">₹{{ item.product.display_price|floatformat:2|intcomma }} / {{ item.product.get_unit_display }}</div>
+                </div>
+                <form method="post" action="{% url 'orders:cart_update' item.id %}" class="d-flex align-items-center gap-2">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" class="form-control form-control-sm" style="width: 70px;" onchange="this.form.submit()">
+                </form>
+                <div class="fw-bold" style="width: 90px; text-align: right; color: var(--sgh-green-900);">₹{{ item.line_total|floatformat:2|intcomma }}</div>
+                <form method="post" action="{% url 'orders:cart_remove' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-danger"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="bg-white border rounded-3 p-4">
+                <h2 class="h6 mb-3">Order Summary</h2>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Items ({{ cart.total_items }})</span>
+                    <span>₹{{ cart.subtotal|floatformat:2|intcomma }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold mb-3">
+                    <span>Subtotal</span>
+                    <span>₹{{ cart.subtotal|floatformat:2|intcomma }}</span>
+                </div>
+                <a href="{% url 'orders:checkout' %}" class="btn btn-sgh-primary w-100">Proceed to Checkout</a>
+                <a href="{% url 'store:shop' %}" class="btn btn-link w-100 mt-2">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-cart-shopping fa-2x mb-3"></i>
+        <p>Your cart is empty.</p>
+        <a href="{% url 'store:shop' %}" class="btn btn-sgh-primary">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

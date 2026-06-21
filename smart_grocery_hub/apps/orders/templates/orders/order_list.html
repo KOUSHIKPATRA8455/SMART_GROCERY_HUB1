@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}My Orders — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="h4 sgh-section-title mb-4">My Orders</h1>
+
+    {% if orders %}
+    {% for order in orders %}
+    <div class="bg-white border rounded-3 p-3 mb-3">
+        <div class="d-flex justify-content-between flex-wrap align-items-center">
+            <div>
+                <a href="{% url 'orders:order_detail' order.order_number %}" class="fw-bold text-decoration-none">{{ order.order_number }}</a>
+                <div class="text-muted small">Placed on {{ order.placed_at|date:"d M Y, h:i A" }} &middot; {{ order.items.count }} item(s)</div>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-light text-dark border mb-1">{{ order.get_status_display }}</span>
+                <div class="fw-bold">₹{{ order.total_amount|floatformat:2|intcomma }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-receipt fa-2x mb-3"></i>
+        <p>You haven't placed any orders yet.</p>
+        <a href="{% url 'store:shop' %}" class="btn btn-sgh-primary">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

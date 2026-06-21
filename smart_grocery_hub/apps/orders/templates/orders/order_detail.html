@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Order {{ order.order_number }} — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap mb-4">
+        <div>
+            <h1 class="h4 mb-1">Order {{ order.order_number }}</h1>
+            <p class="text-muted small mb-0">Placed on {{ order.placed_at|date:"d M Y, h:i A" }}</p>
+        </div>
+        <span class="badge bg-light text-dark border fs-6">{{ order.get_status_display }}</span>
+    </div>
+
+    {% if order.status != "cancelled" and order.status != "returned" %}
+    <div class="bg-white border rounded-3 p-4 mb-4">
+        <h2 class="h6 mb-3">Order Status</h2>
+        <div class="d-flex justify-content-between text-center small">
+            {% for step, label in order_steps %}
+            <div class="flex-fill">
+                <div class="mb-1">
+                    <i class="fa-solid fa-circle {% if step <= current_step %}text-success{% else %}text-secondary{% endif %}"></i>
+                </div>
+                {{ label }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="bg-white border rounded-3 p-4 mb-4">
+                <h2 class="h6 mb-3">Items</h2>
+                {% for item in order.items.all %}
+                <div class="d-flex justify-content-between small mb-2">
+                    <span>{{ item.product_name }} &times; {{ item.quantity }}</span>
+                    <span>₹{{ item.line_total|floatformat:2|intcomma }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="bg-white border rounded-3 p-4">
+                <h2 class="h6 mb-3">Shipping Address</h2>
+                <p class="mb-0">
+                    <strong>{{ order.shipping_full_name }}</strong><br>
+                    {{ order.shipping_address_line1 }}, {{ order.shipping_address_line2 }}<br>
+                    {{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_pincode }}<br>
+                    Phone: {{ order.shipping_phone_number }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="bg-white border rounded-3 p-4 mb-3">
+                <h2 class="h6 mb-3">Payment Summary</h2>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Subtotal</span><span>₹{{ order.subtotal|floatformat:2|intcomma }}</span>
+                </div>
+                {% if order.discount_amount %}
+                <div class="d-flex justify-content-between small mb-2 text-success">
+                    <span>Discount</span><span>-₹{{ order.discount_amount|floatformat:2|intcomma }}</span>
+                </div>
+                {% endif %}
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Delivery Charge</span><span>₹{{ order.delivery_charge|floatformat:2|intcomma }}</span>
+                </div>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Tax (GST)</span><span>₹{{ order.tax_amount|floatformat:2|intcomma }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Total</span><span>₹{{ order.total_amount|floatformat:2|intcomma }}</span>
+                </div>
+                <p class="text-muted small mt-3 mb-0">Payment Method: {{ order.get_payment_method_display }}</p>
+            </div>
+
+            <div class="d-flex gap-2">
+                {% if order.can_be_cancelled %}
+                <form method="post" action="{% url 'orders:order_cancel' order.order_number %}" class="flex-fill">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger w-100">Cancel Order</button>
+                </form>
+                {% endif %}
+                <form method="post" action="{% url 'orders:reorder' order.order_number %}" class="flex-fill">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sgh-primary w-100">Reorder</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

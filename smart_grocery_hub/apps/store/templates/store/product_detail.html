@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}{{ product.name }} — Smart Grocery Hub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav class="small text-muted mb-3">
+        <a href="{% url 'store:home' %}">Home</a> /
+        <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> /
+        <span>{{ product.name }}</span>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="sgh-product-img-wrap rounded-3" style="font-size: 5rem; aspect-ratio: 1/1;">
+                {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-100 h-100 rounded-3" style="object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-carrot"></i>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="text-muted mb-1">{{ product.category.name }}{% if product.brand %} &middot; {{ product.brand.name }}{% endif %}</div>
+            <h1 class="h3 mb-2">{{ product.name }}</h1>
+
+            <div class="mb-3">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= product.average_rating %}
+                        <i class="fa-solid fa-star text-warning"></i>
+                    {% else %}
+                        <i class="fa-regular fa-star text-warning"></i>
+                    {% endif %}
+                {% endfor %}
+                <span class="text-muted small ms-1">{{ product.average_rating }} ({{ product.review_count }} reviews)</span>
+            </div>
+
+            <div class="d-flex align-items-baseline gap-3 mb-3">
+                <span class="sgh-price fs-3">₹{{ product.display_price|floatformat:2|intcomma }}</span>
+                {% if product.discount_percentage %}
+                    <span class="sgh-price-strike fs-5">₹{{ product.price|floatformat:2|intcomma }}</span>
+                    <span class="sgh-discount-pill">{{ product.discount_percentage }}% OFF</span>
+                {% endif %}
+                <span class="text-muted small">/ {{ product.unit_value|floatformat:"0" }} {{ product.get_unit_display }}</span>
+            </div>
+
+            {% if product.gst_percentage %}
+            <p class="text-muted small mb-3">Inclusive of {{ product.gst_percentage }}% GST</p>
+            {% endif %}
+
+            {% if product.is_in_stock %}
+                {% if product.is_low_stock %}
+                <p class="text-warning small fw-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Only {{ product.stock_quantity }} left in stock!</p>
+                {% endif %}
+            {% else %}
+                <p class="text-danger fw-semibold">Out of Stock</p>
+            {% endif %}
+
+            <div class="d-flex gap-2 mb-4">
+                {% if product.is_in_stock %}
+                <form method="post" action="{% url 'orders:cart_add' product.slug %}" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="form-control" style="width: 90px;">
+                    <button type="submit" class="btn btn-sgh-primary px-4">
+                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    </button>
+                </form>
+                {% else %}
+                <button class="btn btn-outline-secondary px-4" disabled>Out of Stock</button>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'store:wishlist_toggle' product.slug %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-sgh">
+                        <i class="fa-{% if is_wishlisted %}solid{% else %}regular{% endif %} fa-heart"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+            <h2 class="h6 sgh-section-title">Description</h2>
+            <p class="text-muted">{{ product.description|default:"No description available." }}</p>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="h5 sgh-section-title mb-4">Customer Reviews ({{ product.review_count }})</h2>
+
+            {% for review in reviews %}
+            <div class="mb-3 pb-3 border-bottom">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ review.user.username }}</strong>
+                    <span class="text-muted small">{{ review.created_at|date:"d M Y" }}</span>
+                </div>
+                <div class="mb-1">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            <i class="fa-solid fa-star text-warning small"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star text-warning small"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="mb-0 text-muted">{{ review.comment }}</p>
+            </div>
+            {% empty %}
+            <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+            {% endfor %}
+
+            {% if review_form %}
+            <div class="mt-4">
+                <h3 class="h6">Write a Review</h3>
+                <form method="post" action="{% url 'store:add_review' product.slug %}">
+                    {% csrf_token %}
+                    <div class="mb-2">{{ review_form.rating.label_tag }} {{ review_form.rating }}</div>
+                    <div class="mb-2">{{ review_form.comment }}</div>
+                    <button type="submit" class="btn btn-sgh-primary btn-sm">Submit Review</button>
+                </form>
+            </div>
+            {% elif user_has_reviewed %}
+            <p class="text-muted small mt-3"><i class="fa-solid fa-circle-check text-success"></i> You've already reviewed this product.</p>
+            {% elif not user.is_authenticated %}
+            <p class="text-muted small mt-3"><a href="{% url 'accounts:login' %}">Log in</a> to write a review.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if related_products %}
+    <hr class="my-5">
+    <h2 class="h5 sgh-section-title mb-4">You May Also Like</h2>
+    <div class="row g-3">
+        {% for product in related_products %}
+        <div class="col-6 col-md-3">
+            {% include "store/_product_card.html" %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
